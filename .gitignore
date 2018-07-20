@@ -1,0 +1,6 @@
+.DS_Store
+.datignore
+coverage/
+dat.json
+dist/
+node_modules/

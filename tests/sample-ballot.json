@@ -1,0 +1,12 @@
+{
+  "chat": [
+     [1531859695000, "ideas?"]
+  ],
+  "displayName": "Jonathan",
+  "issueName": "lunch",
+  "participants": [
+    ["Lily", "./tests/no-ballot.json"],
+    ["Mattie", "./tests/another-ballot.json"]
+  ],
+  "proposal": "Walk before eat"
+}

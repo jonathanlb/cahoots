@@ -1,0 +1,46 @@
+{
+  "name": "cahoots",
+  "version": "1.0.0",
+  "repository": "https://github.com/jonathanlb/cahoots",
+  "description": "P2P Consensus Single-page App",
+  "main": "index.js",
+  "scripts": {
+    "build": "node copyStaticAssets.js && browserify index.js --debug -o dist/bundle.js",
+    "lint": "eslint --fix src/** views/**",
+    "test": "jest --detectOpenHandles --forceExit --coverage",
+    "watch": "watchify index.js -o dist/bundle.js -v"
+  },
+  "keywords": [
+    "P2P",
+    "beaker"
+  ],
+  "author": "Jonathan Bredin",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "debug": "^3.1.0",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
+    "yo-yo": "^1.4.1"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.6",
+    "babel-jest": "^23.4.0",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-async-functions": "^6.22.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-regenerator": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "browserify": "^16.2.2",
+    "eslint": "^5.1.0",
+    "hyperdrive": "^9.14.0",
+    "jest": "^23.4.0",
+    "jest-cli": "^23.4.0",
+    "node-dat-archive": "^2.0.1",
+    "shelljs": "^0.8.2",
+    "tmp": "0.0.33",
+    "watchify": "^3.11.0"
+  }
+}
