@@ -32,14 +32,13 @@ function renderTally(tally) {
   const proposal =
     yo`<div className="proposal" >
       <h3>Proposal:</h3>
-      <textarea id="proposalField"
+      <textarea className="freeFormText"
+        id="proposalField"
         onkeyup=${(e)=> {
           if (e.key == 'Enter') {
             tally.propose(e.target);
           }
-        }} >
-        ${tally.proposal}
-      </textarea>
+        }} >${tally.proposal}</textarea>
       <br/>
       <input className="proposeButton"
         type="button"
@@ -48,16 +47,16 @@ function renderTally(tally) {
         }
         value="Propose!" />
     </div>`;
+
   const messages =
     yo`<div className="chat" >
       <h3>Chatter:</h3>
-      <textarea
+      <textarea className="freeFormText"
         onkeyup=${(e)=> {
           if (e.key == 'Enter') {
             tally.chat(e.target);
           }
-        }} >
-      </textarea>
+        }} ></textarea>
       <div className="chatMessages" >
         ${tally.getChatMessages().
           map((tsNameMsg) => {
@@ -69,9 +68,29 @@ function renderTally(tally) {
           })}
       </div>
     </div>`;
+
+  const invite =
+    yo`<div className="participants" >
+        <h3>Invite:</h3>
+        <form>
+          <div>
+            <label for="inviteNameField">Invitee Name:</label>
+            <input type="text" id="inviteNameField"></input>
+
+            <label for="inviteDatField">Dat URI:</label>
+            <input type="text" id="inviteDatField"></input>
+            <input className="proposeButton"
+              type="button"
+              value="Invite" />
+          <div>
+        </form>
+      </div>`;
+
   return [
     yo`<div className="proposalGrouping" >
       ${[participants, votes, proposal]}
     </div>`,
-    messages];
+    yo`<div className="proposalGrouping" >
+      ${[invite, messages]}
+    </div>`];
 }

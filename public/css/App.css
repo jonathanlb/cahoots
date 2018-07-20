@@ -22,14 +22,12 @@ button.proposeButton {
 }
 
 div.chat {
-  float: left;
   border-style: solid;
   border-radius: 5px;
   border-color: #000;
   border-width: 2px;
   margin: 2%;
   padding: 2%;
-  width: 45%;
 }
 
 div.chatMessages {
@@ -99,4 +97,12 @@ div.votes {
   border-width: 2px;
   margin: 2%;
   padding: 2%;
+}
+
+form label {
+  font-weight: bold;
+}
+
+textarea.freeFormText {
+  width: 100%;
 }

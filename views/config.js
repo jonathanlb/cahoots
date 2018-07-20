@@ -5,10 +5,14 @@ exports.render = function render() {
   return yo`
     <div className="tally" >
       <h2>Issue Configurator</h2>
-      ${location.href}
       <form>
-        Issue: <input type="text" id="issueNameField" /> <br/>
-        Participant: <input type="text" id="participantNameField" /> <br/>
+        <h3>New Issue</h3>
+        <label for="issueNameField" >Issue:</label>
+        <input type="text" id="issueNameField" />
+        <br/>
+        <label for="participantNameField" >Participant:</label>
+        <input type="text" id="participantNameField" />
+        <br/>
         <input className="proposeButton"
           type="button"
           value="Start!"
@@ -19,5 +23,20 @@ exports.render = function render() {
             })
           }/>
       </form>
-    </div>`;
+
+      <form>
+        <h3>Existing Issue</h3>
+        <label for="configUriField" >URI:</label>
+        <input type="text" id="configUriField" />
+        <br/>
+        <input className="proposeButton"
+          type="button"
+          value="Join!"
+          onclick=${() =>
+            window.app.startConsensusFromUri({
+              displayName: document.getElementById('configUriField').value.trim()
+            })
+          }/>
+        </form>
+      </div>`;
 }
