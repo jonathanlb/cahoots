@@ -31,7 +31,6 @@ function renderView(viewName) {
   switch(viewName) {
     case 'config':
       return configView.render();
-      break;
     case 'start':
       if (window.app.tally) {
         return yo`<div>
@@ -42,7 +41,6 @@ function renderView(viewName) {
           <h2>Loading...</h2>
         </div>`;
       }
-      break;
     default:
       return yo`<div><h3>huh....</h3></div`;
   }

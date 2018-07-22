@@ -5,7 +5,7 @@ test('splits uris', () => {
   const uri = 'https://foo.bar/baz/bob.html';
   expect(dp.splitUri(uri)).toEqual(
     {
-      volume: 'https://foo.bar/',
-      fileName: 'baz/bob.html'
+      volume: 'https://foo.bar',
+      fileName: '/baz/bob.html'
     });
 });

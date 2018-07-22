@@ -1,8 +1,6 @@
 const debug = require('debug')('Tally');
 // const errors = require('debug')('Tally:error');
 const DatProposer = require('./DatProposer');
-const FileProposer  = require('./FileProposer');
-const HttpProposer = require('./HttpProposer');
 const Stopper = require('./Stopper');
 
 module.exports = class Tally {
@@ -33,14 +31,8 @@ module.exports = class Tally {
     return this.writeSelf();
   }
 
-  createProposer(uri) {
-    if (uri.startsWith('dat://')) {
-      return new DatProposer();
-    } else if (this.shouldUseRequest(uri)) {
-      return new HttpProposer();
-    } else {
-      return new FileProposer();
-    }
+  createProposer() { // keep uri available
+    return new DatProposer();
   }
 
   getChatMessages() {
@@ -50,6 +42,10 @@ module.exports = class Tally {
         return [parseInt(key[0]), key[1], entry[1]]
       }).
       sort((a, b) => b[0] - a[0]);
+  }
+
+  getUrl() {
+    return `${window.location}/?config=${this.ballotUri}`; // XXX
   }
 
   getParticipantNames() {

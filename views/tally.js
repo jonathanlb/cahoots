@@ -4,7 +4,7 @@ const yo = require('yo-yo');
 exports.render = function render(tally) {
   return yo`
     <div className="tally" >
-      <h2>${tally.issueName}</h2>
+      <h2><a href="${tally.getUrl()}">${tally.issueName}</a></h2>
       ${renderTally(tally)}
     </div>`;
 };
@@ -71,7 +71,7 @@ function renderTally(tally) {
 
   const invite =
     yo`<div className="participants" >
-        <h3>Invite:</h3>
+        <h3><a href="${tally.getUrl()}">Invite:</a></h3>
         <form>
           <div>
             <label for="inviteNameField">Invitee Name:</label>

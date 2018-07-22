@@ -13,7 +13,7 @@ module.exports = class DatProposer {
    * @param f optional (err x dat) => void function to pass to Dat constructor.
    */
   getDat(uri, f) {
-    const { volume, fileName } = this.splitUri(uri);
+    const { volume } = this.splitUri(uri);
     let dat = undefined;
     if (window.DatArchive === undefined) {
       // not working -- versioning with dat-gateway?
@@ -30,6 +30,7 @@ module.exports = class DatProposer {
 
   async propose(uri, content) {
     const { volume, fileName } = this.splitUri(uri);
+    debug('writing', uri);
     return this.getDat(volume).
       writeFile(fileName, JSON.stringify(content, null, '\t')).
       catch(e => errors('propose', e));
@@ -42,11 +43,12 @@ module.exports = class DatProposer {
    */
   async readBallot(uri) {
     const { volume, fileName } = this.splitUri(uri);
-    return this.getDat(uri).readFile(fileName);
+    return this.getDat(volume).
+      readFile(fileName);
   }
 
   splitUri(uri) {
-    const volume = uri.match(/^[a-z]*:\/\/[^\/]*\//)[0];
+    const volume = uri.match(/^[a-z]*:\/\/[^/]*/)[0];
     const fileName = uri.substring(volume.length);
     return { volume, fileName };
   }
@@ -57,20 +59,21 @@ module.exports = class DatProposer {
   }
 
   async watchProposal(uri, update) {
-    debug('watch', uri);
     const { volume, fileName } = this.splitUri(uri);
-    const dat = this.getDat(volume, (err, dat) => {
-      if (err) {
-        errors('watching ' + uri, err);
-      } else {
-        const mirror = dat.importFiles({ watch: true});
-        this.stopper.onStop(() => mirror.destroy());
-        mirror.on('put', (src, dest) => {
-          debug('watch update', src, dest);
-          this.readBallot(uri).
-            then((ballot) => update(ballot));
-        });
-      }
+    debug('setup watch', volume, fileName);
+    const dat = this.getDat(volume);
+    const eventTarget = dat.watch(fileName);
+    debug('eventTarget', eventTarget);
+    this.stopper.onStop(() => {
+      debug('closing watch', uri);
+      eventTarget.close()
+    });
+    eventTarget.addEventListener('changed', ({path}) => {
+      debug(path, 'has been updated!');
+      dat.readFile(fileName).
+        then(update).
+        catch((error) =>
+          errors('watching for update', uri, error));
     });
   }
 }

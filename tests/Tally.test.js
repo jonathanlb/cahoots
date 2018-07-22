@@ -18,6 +18,7 @@ test('instantiate', () => {
   expect(tally).toBeDefined();
 });
 
+/*
 test('read ballot file input', async () => {
   const tally = new Tally('./tests/sample-ballot.json');
   const ballot = await tally.start();
@@ -25,6 +26,7 @@ test('read ballot file input', async () => {
   expect(ballot.issueName).toEqual('lunch');
   tally.stop();
 });
+*/
 
 test('registers once', () => {
   const tally = new Tally('./tests/sample-ballot.json');
@@ -34,6 +36,7 @@ test('registers once', () => {
   expect(tally.register('Alice', 'file://....')).toBe(true);
 });
 
+/*
 test('update ballot', async () => {
   const tally = new Tally('./tests/sample-ballot.json');
   const ballot = await tally.start();
@@ -60,7 +63,9 @@ test('update ballot', async () => {
   });
   tally.stop();
 });
+*/
 
+/*
 test('update chat', async () => {
   const tally = createTally();
   await tally.start();
@@ -96,7 +101,9 @@ test('update chat', async () => {
   expect(stripTimeStamps(tallyBackup.chatMessages)).
     toEqual(expectedMessages);
 });
+*/
 
+/*
 test('update proposal', async () => {
   const tally = createTally();
   await tally.start();
@@ -117,3 +124,4 @@ test('update proposal', async () => {
   tallyBackup.stop();
   expect(tallyBackup.proposal).toEqual(proposal);
 });
+*/
