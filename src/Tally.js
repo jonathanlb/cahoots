@@ -44,8 +44,13 @@ module.exports = class Tally {
       sort((a, b) => b[0] - a[0]);
   }
 
-  getUrl() {
-    return `${window.location}/?config=${this.ballotUri}`; // XXX
+  getUrl(participantName) {
+    if (participantName) {
+      const participantUri = this.participantUris[participantName];
+      return `${window.location}/?config=${this.ballotUri}&ballot=${participantUri}`;
+    } else {
+      return `${window.location}/?config=${this.ballotUri}&ballot=${this.ballotUri}`;
+    }
   }
 
   getParticipantNames() {
@@ -72,6 +77,30 @@ module.exports = class Tally {
       this.watchProposal(uri);
     // }
     this.updateFromBallot(ballot);
+  }
+
+  async invite(name, datUri, f) {
+    if (!(name || '').trim().length) {
+      f('ERROR: participant name is required');
+      return;
+    }
+    let updatedName = name.trim();
+
+    let updatedDat = (datUri || '').trim();
+    if (!updatedDat.length) {
+      updatedDat = this.participantUris[updatedName];
+    }
+
+    if (!(updatedDat || '').trim().length) {
+      f('ERROR: participant dat is required');
+      return;
+    }
+
+    const remoteBallot = this.ballotUri.replace(
+      /dat:\/\/[^/]*/, updatedDat);
+    this.register(updatedName, remoteBallot);
+    return this.writeSelf() &&
+      f(`OK: ${this.getUrl(updatedName)}`);
   }
 
   numParticipants() {
@@ -114,10 +143,6 @@ module.exports = class Tally {
       this.participantNames[uri] = name;
       return true;
     }
-  }
-
-  shouldUseRequest(uri) {
-    return /^[a-z]+:\/\//.test(uri);
   }
 
   /**

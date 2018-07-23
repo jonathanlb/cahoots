@@ -13,9 +13,39 @@ function createTally() {
   return new Tally(`${tmpDir.name}/sample-ballot.json`);
 }
 
+test('gets the ballot URL', () => {
+  const ballot = 'dat://aced';
+  const fileName = '/ballots/sample-ballot.json';
+  const url = `${ballot}${fileName}`;
+  const tally = new Tally(url);
+  expect(tally.getUrl()).toEqual(
+    `about:blank/?config=${ballot}${fileName}&ballot=${ballot}${fileName}`);
+});
+
+test('gets the ballot URL for a participant', () => {
+  const ballot = 'dat://aced';
+  const config = 'dat://1234';
+  const fileName = '/ballots/sample-ballot.json';
+  const url = `${config}${fileName}`;
+  const tally = new Tally(url);
+  tally.register('Jonathan', `${ballot}${fileName}`);
+  expect(tally.getUrl('Jonathan')).
+    toEqual(`about:blank/?config=${config}${fileName}&ballot=${ballot}${fileName}`);
+});
+
 test('instantiate', () => {
   const tally = new Tally('./tests/sample-ballot.json');
   expect(tally).toBeDefined();
+});
+
+test('invites a participant', () => {
+  const url = 'dat://abcd/ballots/sample-ballot.json';
+  const tally = new Tally(url);
+  let result = '';
+  tally.invite('Jonathan', 'dat://a11ebaba', (msg) => { result = msg; });
+  expect(result.substring(0,4)).toEqual('OK: ');
+  expect(result.includes('ballot=dat://a11ebaba')).toBe(true);
+  expect(result.includes('config=dat://abcd/ballots/sample-ballot.json')).toBe(true);
 });
 
 /*

@@ -149,6 +149,7 @@ module.exports = class CahootsApp {
   }
 
   async startConsensus({displayName, issueName}) {
+    localStorage.displayName = displayName;
     return this.createIssue({displayName, issueName}).
       then((uri) => this.startConsensusFromUri(uri)).
       catch((error) => {

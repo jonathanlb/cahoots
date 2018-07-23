@@ -5,13 +5,14 @@ exports.render = function render() {
   return yo`
     <div className="tally" >
       <h2>Issue Configurator</h2>
-      <form>
+      <div className="tally" >
         <h3>New Issue</h3>
         <label for="issueNameField" >Issue:</label>
         <input type="text" id="issueNameField" />
         <br/>
         <label for="participantNameField" >Participant:</label>
-        <input type="text" id="participantNameField" />
+        <input type="text" id="participantNameField"
+          value=${localStorage.displayName || ''}/>
         <br/>
         <input className="proposeButton"
           type="button"
@@ -22,10 +23,22 @@ exports.render = function render() {
               issueName: document.getElementById('issueNameField').value.trim()
             })
           }/>
-      </form>
+      </div>
 
-      <form>
-        <h3>Existing Issue</h3>
+      <div className="tally" >
+        <h3>Existing Issues</h3>
+        <label for="datIssueUriField" >Dat:</label>
+        <input type="text" id="datIssueUriField"
+          value=${window.app.datUri} />
+      </div>
+
+      <div className="tally" >
+        <h3>Join Issue</h3>
+        <label for="datUriField" >Writeable Dat:</label>
+        <input type="text" id="datUriField"
+          value=${window.app.datUri}
+          readonly />
+        <br/>
         <label for="configUriField" >URI:</label>
         <input type="text" id="configUriField" />
         <br/>
@@ -37,6 +50,6 @@ exports.render = function render() {
               displayName: document.getElementById('configUriField').value.trim()
             })
           }/>
-        </form>
+        </div>
       </div>`;
 }

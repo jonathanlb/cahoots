@@ -19,6 +19,7 @@ npm run build
 - figure out configuration
 - browse local issues
 - clear local storage....
+- remove voter
 - ballots write to server directory.... can overwrite
 - smoother updates -- file specific watch, strategic update in UI.... file watch only works when browser watches entire directory, not with dat archive watch.
 - voter directory -- store locally dat archive names

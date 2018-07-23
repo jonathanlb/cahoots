@@ -17,7 +17,7 @@ function renderTally(tally) {
         sort().
         map((name) => {
           return yo`<div className="participant" >
-            ${name}
+            <a href="${tally.getUrl(name)}">${name}</a>
           </div>`; // TODO boldface our name
         })}</div>`;
   const votes =
@@ -80,6 +80,13 @@ function renderTally(tally) {
             <label for="inviteDatField">Dat URI:</label>
             <input type="text" id="inviteDatField"></input>
             <input className="proposeButton"
+              onclick=${() => {
+                tally.invite(
+                  document.getElementById('inviteNameField').value,
+                  document.getElementById('inviteDatField').value,
+                  (msg) => { alert(msg); }
+                );
+              }}
               type="button"
               value="Invite" />
           <div>
