@@ -8,10 +8,9 @@ module.exports = class CahootsApp {
   /**
    */
   constructor() {
-    // The location to which we can write our proposal and invites.
-    this.ballotUri = undefined;
     // The location from which we read consensus participants, etc.
     this.configUri = undefined;
+    // Writeable dat archive where we write our ballots.
     this.datArchive = undefined;
     // view name for yo-yo rendering.
     this.currentView = undefined;
@@ -38,6 +37,19 @@ module.exports = class CahootsApp {
   }
 
   /**
+   * Return the dat URI containing the configuration ballot from the window
+   * location or optionally the input parameter.
+   * @param optional parameter to override window.location.search
+   * @return string
+   */
+  getConfigUriFromLocation(location) {
+    const config = (location || window.location.search || '').match(/[?&]config=[^&]*/);
+    if (config) {
+      return config[0].substring('?config='.length);
+    }
+  }
+
+  /**
    * Return a writeable dat URI from the window location or optionally the input
    * parameter.
    * @param optional parameter to override window.location.search
@@ -51,16 +63,12 @@ module.exports = class CahootsApp {
   }
 
   /**
-   * Return the dat URI containing the configuration ballot from the window
-   * location or optionally the input parameter.
-   * @param optional parameter to override window.location.search
-   * @return string
+   * @return The display name from the ballot matching the dat URI.
    */
-  getConfigUriFromLocation(location) {
-    const config = (location || window.location.search || '').match(/[?&]config=[^&]*/);
-    if (config) {
-      return config[0].substring('?config='.length);
-    }
+  getDisplayName(ballot, datUri) {
+    return ((ballot.participants || []).find((entry) =>
+      entry[1].startsWith(datUri)) ||
+      ['???', 'dat'])[0];
   }
 
   issueNameToFile(issueName) {
@@ -136,22 +144,45 @@ module.exports = class CahootsApp {
    */
   async start() {
     debug('start');
-    this.tally = new Tally(this.configUri,
-      () => { views.render(this.currentView) });
-    this.tally.start();
-    this.setView('start');
+    // check existence of ballot uri, write if necessary
+    const dat = this.datArchive;
+    const filePath = this.configUri.replace(/dat:\/\/[^/]*/, '');
+    const fileName = filePath.replace(/.*\//, '');
+    return dat.readdir(BALLOT_DIR).
+      then((contents) => {
+        debug('reading local ballots', contents)
+        if (!contents.includes(fileName)) {
+            const configDatUri = this.configUri.match(/dat:\/\/[^/]*/)[0];
+            debug('copying', this.configUri, filePath, 'to', this.datUri);
+            const configDat = new DatArchive(configDatUri);
+            return configDat.readFile(filePath).
+              then((configContents) => {
+                const ballot = JSON.parse(configContents);
+                ballot.displayName = this.getDisplayName(ballot, dat.url);
+                ballot.chat = [];
+                ballot.proposal = '';
+                return dat.writeFile(filePath, JSON.stringify(ballot));
+              });
+        }
+      }).then(() => {
+        const ballotUri = `${dat.url}/${filePath}`;
+        this.tally = new Tally(ballotUri,
+          () => { views.render(this.currentView) });
+        this.tally.start();
+        this.setView('start');
+      });
   }
 
-  async startConsensusFromUri(configUri) {
+  async startNewConsensusFromUri(configUri) {
     this.configUri = configUri;
     debug('using config uri', configUri);
     return this.start();
   }
 
-  async startConsensus({displayName, issueName}) {
+  async startNewConsensus({displayName, issueName}) {
     localStorage.displayName = displayName;
     return this.createIssue({displayName, issueName}).
-      then((uri) => this.startConsensusFromUri(uri)).
+      then((uri) => this.startNewConsensusFromUri(uri)).
       catch((error) => {
         alert('DOH!\n' + error);
       })

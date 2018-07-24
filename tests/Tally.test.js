@@ -66,6 +66,25 @@ test('registers once', () => {
   expect(tally.register('Alice', 'file://....')).toBe(true);
 });
 
+test('sums defined votes', () => {
+  const tally = new Tally('./tests/sample-ballot.json');
+  tally.votes = {
+    'Jonathan': 'walk',
+    'Mattie': 'walk'
+  };
+  tally['Lily'] = undefined;
+  expect(tally.getVotes()).toEqual({'walk': 2});
+});
+
+test('sums votes', () => {
+  const tally = new Tally('./tests/sample-ballot.json');
+  tally.votes = {
+    'Lily': 'sleep',
+    'Jonathan': 'walk',
+    'Mattie': 'walk'
+  };
+  expect(tally.getVotes()).toEqual({'sleep': 1, 'walk': 2});
+});
 /*
 test('update ballot', async () => {
   const tally = new Tally('./tests/sample-ballot.json');

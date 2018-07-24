@@ -17,6 +17,7 @@ npm run build
 ## Todo
 - invite others
 - figure out configuration
+- events don't propogate (watch() broken)
 - browse local issues
 - clear local storage....
 - remove voter

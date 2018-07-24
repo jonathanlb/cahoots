@@ -16,18 +16,36 @@ function renderTally(tally) {
       ${tally.getParticipantNames().
         sort().
         map((name) => {
-          return yo`<div className="participant" >
-            <a href="${tally.getUrl(name)}">${name}</a>
-          </div>`; // TODO boldface our name
+          if (name === tally.displayName) {
+            return yo`<div className="participant" >
+              <em><a href="${tally.getUrl(name)}">${name}</a></em>
+            </div>`;
+          } else {
+            return yo`<div className="participant" >
+              <a href="${tally.getUrl(name)}">${name}</a>
+            </div>`;
+          }
         })}</div>`;
+
+  function setVote(e) {
+    // TODO unset all other checkboxes
+    tally.propose(e.target);
+  }
+
   const votes =
     yo`<div className="votes" >
       ${Object.entries(tally.getVotes()).
         sort((a, b) => { return a[1] - b[1]; }).
         map((e) => {
-          return yo`<div className="vote" >
-            <b>${e[1]}:</b> ${e[0]}
-          </div>`;
+          if (e[0] === tally.proposal) {
+            return yo`<div className="vote" >
+              <input type="checkbox" checked onclick=${setVote} value="${e[0]}" /> <b>${e[1]}:</b> ${e[0]}
+            </div>`;
+          } else {
+            return yo`<div className="vote" >
+              <input type="checkbox" onclick=${setVote} value="${e[0]}" /> <b>${e[1]}:</b> ${e[0]}
+            </div>`;
+          }
         })}</div>`;
   const proposal =
     yo`<div className="proposal" >

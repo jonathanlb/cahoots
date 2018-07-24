@@ -18,7 +18,7 @@ exports.render = function render() {
           type="button"
           value="Start!"
           onclick=${() =>
-            window.app.startConsensus({
+            window.app.startNewConsensus({
               displayName: document.getElementById('participantNameField').value.trim(),
               issueName: document.getElementById('issueNameField').value.trim()
             })
@@ -46,7 +46,7 @@ exports.render = function render() {
           type="button"
           value="Join!"
           onclick=${() =>
-            window.app.startConsensusFromUri({
+            window.app.startNewConsensusFromUri({
               displayName: document.getElementById('configUriField').value.trim()
             })
           }/>

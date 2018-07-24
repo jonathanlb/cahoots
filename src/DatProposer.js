@@ -58,18 +58,17 @@ module.exports = class DatProposer {
     this.stopper.stop();
   }
 
-  async watchProposal(uri, update) {
+  watchProposal(uri, update) {
     const { volume, fileName } = this.splitUri(uri);
     debug('setup watch', volume, fileName);
     const dat = this.getDat(volume);
     const eventTarget = dat.watch(fileName);
-    debug('eventTarget', eventTarget);
     this.stopper.onStop(() => {
       debug('closing watch', uri);
       eventTarget.close()
     });
-    eventTarget.addEventListener('changed', ({path}) => {
-      debug(path, 'has been updated!');
+    eventTarget.addEventListener('changed', (path) => {
+      debug(path, 'updated');
       dat.readFile(fileName).
         then(update).
         catch((error) =>

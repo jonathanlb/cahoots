@@ -60,10 +60,12 @@ module.exports = class Tally {
   getVotes() {
     const results = {};
     Object.values(this.votes).forEach((v) => {
-      if (results[v] === undefined) {
-        results[v] = 1;
-      } else {
-        results[v] += 1;
+      if (v !== undefined) {
+        if (results[v] === undefined) {
+          results[v] = 1;
+        } else {
+          results[v] += 1;
+        }
       }
     });
     return results;
@@ -73,9 +75,7 @@ module.exports = class Tally {
     debug('initializing from ' + uri + ' ' + ballot);
     this.displayName = ballot.displayName;
     this.register(ballot.displayName, uri);
-    //if (this.watchSelf) {
-      this.watchProposal(uri);
-    // }
+    this.watchProposal(uri);
     this.updateFromBallot(ballot);
   }
 
@@ -115,7 +115,7 @@ module.exports = class Tally {
   }
 
   async propose(elt) {
-    this.proposal = elt.value.trim();
+    this.votes[this.displayName] = this.proposal = elt.value.trim();
     debug('propose', this.proposal);
     return this.writeSelf();
   }
@@ -210,16 +210,21 @@ module.exports = class Tally {
   }
 
   async watchProposal(uri) {
-    debug(`watching ${uri}`);
+    debug('watching', uri);
     if (uri) {
       const watcher = this.createProposer(uri);
       this.stopper.onStop(() => watcher.stop());
-      return watcher.watchProposal(uri, (content) => {
+      watcher.watchProposal(uri, (content) => {
         if (content) { // ignore empty requests
           const ballot = this.parseBallot(content);
           return this.updateFromBallot(ballot);
         }
       });
+      return watcher.readBallot(uri).
+        then((content) =>
+          this.parseBallot(content)).
+        then((ballot) =>
+          this.updateFromBallot(ballot));
     }
   }
 
