@@ -46,9 +46,8 @@ exports.render = function render() {
           type="button"
           value="Join!"
           onclick=${() =>
-            window.app.startNewConsensusFromUri({
-              displayName: document.getElementById('configUriField').value.trim()
-            })
+            window.app.startNewConsensusFromUri(
+              document.getElementById('configUriField').value.trim())
           }/>
         </div>
       </div>`;

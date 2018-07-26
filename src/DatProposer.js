@@ -30,7 +30,7 @@ module.exports = class DatProposer {
 
   async propose(uri, content) {
     const { volume, fileName } = this.splitUri(uri);
-    debug('writing', uri);
+    debug('writing', volume, fileName);
     return this.getDat(volume).
       writeFile(fileName, JSON.stringify(content, null, '\t')).
       catch(e => errors('propose', e));
@@ -49,7 +49,8 @@ module.exports = class DatProposer {
 
   splitUri(uri) {
     const volume = uri.match(/^[a-z]*:\/\/[^/]*/)[0];
-    const fileName = uri.substring(volume.length);
+    const fileName = uri.substring(volume.length).
+      replace(/[/]+/g, '/');
     return { volume, fileName };
   }
 

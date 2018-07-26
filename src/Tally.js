@@ -98,9 +98,14 @@ module.exports = class Tally {
 
     const remoteBallot = this.ballotUri.replace(
       /dat:\/\/[^/]*/, updatedDat);
-    this.register(updatedName, remoteBallot);
-    return this.writeSelf() &&
-      f(`OK: ${this.getUrl(updatedName)}`);
+    if (this.register(updatedName, remoteBallot)) {
+      return this.writeSelf() &&
+        this.watchProposal(remoteBallot) &&
+        f(`OK: ${this.getUrl(updatedName)}`);
+    } else {
+      f(`ERROR: duplicate user name or dat archive\n${updatedName}\n${remoteBallot}`);
+    }
+
   }
 
   numParticipants() {

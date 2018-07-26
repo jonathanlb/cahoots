@@ -85,6 +85,33 @@ module.exports = class CahootsApp {
    */
   async setup() {
     debug('setup');
+    const app = this; // keep reference for promise, etc.
+
+    function setDat(dat) {
+      localStorage.datUri = app.datUri = dat.url;
+      app.datArchive = dat;
+      return dat;
+    }
+
+    function promptAndCreateLocalStorage() {
+      return DatArchive.selectArchive({title: 'Local Ballot Storage'}).
+        then(setDat);
+    }
+
+    function createBallotDirectory(dat) {
+      setDat(dat);
+      return dat.mkdir(BALLOT_DIR).
+        catch((error) => {
+          if (error.name === 'EntryAlreadyExistsError') {
+            debug(BALLOT_DIR, 'already present');
+            return dat;
+          } else {
+            alert(`Cannot create ballot storage:\n${error.message}`);
+            return promptAndCreateLocalStorage().
+              then(createBallotDirectory);
+          }
+        });
+    }
 
     // setup Dat
     let promise = undefined;
@@ -93,26 +120,16 @@ module.exports = class CahootsApp {
       this.datUri = localStorage.datUri;
     }
     if (!this.datUri) {
-      promise = DatArchive.create({title: 'Local Ballot Storage'}).
-        then((dat) => {
-          localStorage.datUri = dat.url;
-          return this.datArchive = dat;
-        });
+      promise = promptAndCreateLocalStorage();
     } else {
       debug('using datUri from localStorage', this.datUri);
-      promise = Promise.resolve(this.datArchive = new DatArchive(this.datUri));
-    }
-    promise = promise.then((dat) => {
-      return dat.mkdir(BALLOT_DIR).
+      promise = Promise.resolve(this.datArchive = new DatArchive(this.datUri)).
         catch((error) => {
-          if (error.name === 'EntryAlreadyExistsError') {
-            debug(BALLOT_DIR, 'already present');
-            return dat;
-          } else {
-            throw error;
-          }
+          alert(`cannot use archive ${app.datUri}\n${error.message}`);
+          return promptAndCreateLocalStorage();
         });
-    });
+    }
+    promise = createBallotDirectory(this.datArchive);
 
     this.configUri = this.getConfigUriFromLocation();
     if (this.configUri) {
