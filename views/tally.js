@@ -11,7 +11,7 @@ exports.render = function render(tally) {
 
 function renderTally(tally) {
   const participants =
-    yo`<div className="participants" >
+    yo`<div className="tally" >
       <h3>Participants:</h3>
       ${tally.getParticipantNames().
         sort().
@@ -48,7 +48,7 @@ function renderTally(tally) {
           }
         })}</div>`;
   const proposal =
-    yo`<div className="proposal" >
+    yo`<div className="tally" >
       <h3>Proposal:</h3>
       <textarea className="freeFormText"
         id="proposalField"
@@ -67,7 +67,7 @@ function renderTally(tally) {
     </div>`;
 
   const messages =
-    yo`<div className="chat" >
+    yo`<div className="tally" >
       <h3>Chatter:</h3>
       <textarea className="freeFormText"
         onkeyup=${(e)=> {
@@ -88,7 +88,7 @@ function renderTally(tally) {
     </div>`;
 
   const invite =
-    yo`<div className="participants" >
+    yo`<div className="tally" >
         <h3><a href="${tally.getUrl()}">Invite:</a></h3>
         <form>
           <div>

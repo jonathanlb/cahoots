@@ -20,7 +20,21 @@ exports.render = function render(viewName) {
  */
 function renderHeader() {
   return yo`
-    <header><h1>Cahoots!</h1></header>
+    <header>
+
+      <h1>Cahoots!</h1>
+      <img src="raven.jpg" align="middle" height="100px" style="float:right;" />
+      <br/>
+      <span className="navButton" onclick=${() => console.log('Configure')} >
+        Configure
+      </span>
+      <span className="navButton" onclick=${() => console.log('Open Issues')} >
+        Open Issues
+      </span>
+      <span className="navButton" onclick=${() => console.log('Reset')} >
+        Reset
+      </span>
+    </header>
   `;
 }
 
