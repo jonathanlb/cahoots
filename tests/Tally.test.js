@@ -1,7 +1,6 @@
 const Tally = require('../src/Tally');
 const shell = require('shelljs');
 
-
 /**
  * Create a new tally backed by a file in a temporary directory.
  */
@@ -36,6 +35,37 @@ test('gets the ballot URL for a participant', () => {
 test('instantiate', () => {
   const tally = new Tally('./tests/sample-ballot.json');
   expect(tally).toBeDefined();
+  tally.stop(); // coverage
+});
+
+test('initializes from ballot', () => {
+  const uri = './tests/sample-ballot.json';
+  const name = 'Mattie';
+  let rendered = false;
+  function render() {
+    rendered = true;
+    expect(tally.displayName).toEqual(name);
+  }
+  const tally = new Tally(uri, render);
+  const anotherName = 'Lily';
+  const ballot = {
+    chat: [ ],
+    displayName: name,
+    issueName: 'chew',
+    participants: [[name, uri], [anotherName, 'another-file']],
+    proposal: 'wooof'
+  }
+
+  const ballotUris = new Set();
+  tally.watchProposal = (uri) => ballotUris.add(uri);
+  let written = false;
+  tally.writeSelf = () => written = true;
+  tally.initFromBallot(ballot, uri);
+  expect(rendered).toBe(true);
+  expect(ballotUris).toEqual(new Set([uri, 'another-file']));
+  expect(tally.numParticipants()).toBe(2);
+  expect(new Set(tally.getParticipantNames())).
+    toEqual(new Set([name, anotherName]));
 });
 
 test('invites a participant', () => {
@@ -48,22 +78,81 @@ test('invites a participant', () => {
   expect(result.includes('config=dat://abcd/ballots/sample-ballot.json')).toBe(true);
 });
 
-/*
-test('read ballot file input', async () => {
-  const tally = new Tally('./tests/sample-ballot.json');
-  const ballot = await tally.start();
-  expect(ballot.displayName).toEqual('Jonathan');
-  expect(ballot.issueName).toEqual('lunch');
-  tally.stop();
-});
-*/
-
 test('registers once', () => {
   const tally = new Tally('./tests/sample-ballot.json');
   expect(tally.register('Bob', 'dat://....')).toBe(true);
   expect(tally.register('Bob', 'dat://....')).toBe(false);
   expect(tally.register('Alice', 'dat://....')).toBe(false);
   expect(tally.register('Alice', 'file://....')).toBe(true);
+});
+
+test('responds to chat updates', async () => {
+  const tally = new Tally('./tests/sample-ballot.json');
+  tally.displayName = 'Mattie';
+  const element = {
+    value: ' Woof! '
+  }
+  let written = false;
+  tally.writeSelf = () => {
+    written = true;
+  }
+  await tally.chat(element);
+  expect(tally.getChatMessages().map(e => [e[1], e[2]])).
+    toEqual([['Mattie', 'Woof!']]);
+  expect(written).toBe(true);
+});
+
+test('responds to propose updates', async () => {
+  const tally = new Tally('./tests/sample-ballot.json');
+  tally.displayName = 'Mattie';
+  const element = {
+    value: ' Woof now woof! '
+  }
+  let written = false;
+  tally.writeSelf = () => {
+    written = true;
+  }
+  await tally.propose(element);
+  expect(tally.proposal).toEqual('Woof now woof!');
+  expect(tally.getVotes()).toEqual({'Woof now woof!': 1});
+  expect(written).toBe(true);
+});
+
+test('stores and retrieves chat messages', () => {
+  const tally = new Tally('./tests/sample-ballot.json');
+  const name = 'Mattie';
+  tally.displayName = name;
+
+  const ballot = {
+    chat: [
+      [1, 'woof!'],
+      [2, 'slurp']
+    ],
+    displayName: name,
+    issueName: 'chew',
+    participants: [[name, 'file'], [anotherName, 'another-file']]
+  };
+  tally.updateChat(ballot);
+
+  const anotherName = 'Lily';
+  const anotherBallot = {
+    chat: [
+      [3, 'hmph'],
+    ],
+    displayName: anotherName,
+    issueName: 'chew',
+    participants: ballot.participants
+  };
+  tally.updateChat(anotherBallot);
+
+  const msgs = tally.getChatMessages();
+  expect(msgs).toEqual([
+    [3, anotherName, 'hmph'],
+    [2, name, 'slurp'],
+    [1, name, 'woof!']]);
+  expect(tally.toJson().chat).toEqual([
+    [1, 'woof!'],
+    [2, 'slurp']]);
 });
 
 test('sums defined votes', () => {
@@ -111,44 +200,6 @@ test('update ballot', async () => {
     'Woof': 1
   });
   tally.stop();
-});
-*/
-
-/*
-test('update chat', async () => {
-  const tally = createTally();
-  await tally.start();
-  const proposal = tally.proposal;
-  const name = tally.displayName;
-  const chatElt = {
-    value: 'Hello, World'
-  };
-
-  function stripTimeStamps(chats) {
-    return new Set(
-      Object.entries(chats).
-        map(kv => [kv[0].replace(/^[0-9]*_/, ''), kv[1]]));
-  }
-
-  await tally.chat(chatElt);
-  tally.stop();
-
-  expect(tally.displayName).toEqual(name);
-  expect(tally.proposal).toEqual(proposal);
-
-  const expectedMessages = new Set([
-    ['Jonathan', 'ideas?'], ['Jonathan', 'Hello, World']
-  ]);
-  expect(stripTimeStamps(tally.chatMessages)).
-    toEqual(expectedMessages);
-
-  // make sure we don't clobber the ballot file
-  const tallyBackup = new Tally(tally.ballotUri);
-  await tallyBackup.start();
-  tallyBackup.stop();
-  expect(tallyBackup.proposal).toEqual(proposal);
-  expect(stripTimeStamps(tallyBackup.chatMessages)).
-    toEqual(expectedMessages);
 });
 */
 
