@@ -25,13 +25,18 @@ function renderHeader() {
       <h1>Cahoots!</h1>
       <img src="raven.jpg" align="middle" height="100px" style="float:right;" />
       <br/>
-      <span className="navButton" onclick=${() => console.log('Configure')} >
+      <span className="navButton"
+        onclick=${() => window.app.setView('config') } >
         Configure
       </span>
       <span className="navButton" onclick=${() => console.log('Open Issues')} >
         Open Issues
       </span>
-      <span className="navButton" onclick=${() => console.log('Reset')} >
+      <span className="navButton"
+        onclick=${() => {
+          window.app.reset();
+          window.app.setup();
+        }} >
         Reset
       </span>
     </header>

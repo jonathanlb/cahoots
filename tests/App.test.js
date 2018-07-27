@@ -69,6 +69,16 @@ test('gets a dat configuration', () => {
   expect(uri).toEqual('dat://1234');
 });
 
+test('resets', () => {
+  const app = new App();
+  app.datArchive = {};
+  app.datUri = app.configUri = 'XXXX';
+  app.reset();
+  expect(app.datArchive).toBeUndefined();
+  expect(app.datUri).toBeUndefined();
+  expect(app.configUri).toBeUndefined();
+})
+
 test('translates issue to file names', () => {
   const app = new App();
   expect(app.issueNameToFile('some 1st-Issue')).

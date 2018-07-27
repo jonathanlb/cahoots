@@ -3,5 +3,5 @@
 const { defaults } = require('jest-config');
 module.exports = {
   verbose: true,
-  setupFiles: [ '<rootDir>/jest.setup.js']
+  setupFiles: [ '<rootDir>/jest.setup.js', 'jest-localstorage-mock' ]
 }

@@ -79,6 +79,12 @@ module.exports = class CahootsApp {
       }.json`;
   }
 
+  reset() {
+    localStorage.datUri = this.datUri = undefined;
+    this.datArchive = undefined;
+    this.configUri = undefined;
+  }
+
   /**
    * Get the consensus configuration from the URL, local storage, or prompt
    * the user.
