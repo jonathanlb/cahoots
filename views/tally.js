@@ -92,11 +92,17 @@ function renderTally(tally) {
         <h3><a href="${tally.getUrl()}">Invite:</a></h3>
         <form>
           <div>
-            <label for="inviteNameField">Invitee Name:</label>
-            <input type="text" id="inviteNameField"></input>
-
-            <label for="inviteDatField">Dat URI:</label>
-            <input type="text" id="inviteDatField"></input>
+            <label className="rightLabel" for="inviteNameField">
+              Invitee Name:
+            </label>
+            <span className="rightSpanner" >
+              <input className="rightInput" type="text" id="inviteNameField"></input>
+            </span>
+            <br/>
+            <label className="rightLabel" for="inviteDatField">Dat URI:</label>
+            <span className="rightSpanner" >
+              <input className="rightInput" type="text" id="inviteDatField"></input>
+            </span>
             <input className="proposeButton"
               onclick=${() => {
                 tally.invite(
