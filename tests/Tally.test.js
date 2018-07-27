@@ -13,23 +13,34 @@ function createTally() {
 }
 
 test('gets the ballot URL', () => {
+  const base = 'dat://1234';
   const ballot = 'dat://aced';
   const fileName = '/ballots/sample-ballot.json';
   const url = `${ballot}${fileName}`;
   const tally = new Tally(url);
-  expect(tally.getUrl()).toEqual(
-    `about:blank/?config=${ballot}${fileName}&ballot=${ballot}${fileName}`);
+
+  const expectedUrl =
+    `${base}/?config=${ballot}${fileName}&ballot=${ballot}${fileName}`;
+  const updatedUrl = tally.getUrl(undefined, base);
+  expect(updatedUrl).toEqual(expectedUrl);
+
+  expect(tally.getUrl(undefined, updatedUrl)).toEqual(expectedUrl);
 });
 
 test('gets the ballot URL for a participant', () => {
+  const base = 'dat://a11ebaba';
   const ballot = 'dat://aced';
   const config = 'dat://1234';
   const fileName = '/ballots/sample-ballot.json';
   const url = `${config}${fileName}`;
   const tally = new Tally(url);
   tally.register('Jonathan', `${ballot}${fileName}`);
-  expect(tally.getUrl('Jonathan')).
-    toEqual(`about:blank/?config=${config}${fileName}&ballot=${ballot}${fileName}`);
+
+  const expectedUrl =
+    `${base}/?config=${config}${fileName}&ballot=${ballot}${fileName}`;
+  const updatedUrl = tally.getUrl('Jonathan', base);
+  expect(updatedUrl).toEqual(expectedUrl);
+  expect(tally.getUrl('Jonathan', base)).toEqual(expectedUrl);
 });
 
 test('instantiate', () => {
@@ -68,11 +79,11 @@ test('initializes from ballot', () => {
     toEqual(new Set([name, anotherName]));
 });
 
-test('invites a participant', () => {
+test('invites a participant', async () => {
   const url = 'dat://abcd/ballots/sample-ballot.json';
   const tally = new Tally(url);
   let result = '';
-  tally.invite('Jonathan', 'dat://a11ebaba', (msg) => { result = msg; });
+  await tally.invite('Jonathan', 'dat://a11ebaba', (msg) => { result = msg; });
   expect(result.substring(0,4)).toEqual('OK: ');
   expect(result.includes('ballot=dat://a11ebaba')).toBe(true);
   expect(result.includes('config=dat://abcd/ballots/sample-ballot.json')).toBe(true);
@@ -174,54 +185,3 @@ test('sums votes', () => {
   };
   expect(tally.getVotes()).toEqual({'sleep': 1, 'walk': 2});
 });
-/*
-test('update ballot', async () => {
-  const tally = new Tally('./tests/sample-ballot.json');
-  const ballot = await tally.start();
-  expect(tally.numParticipants()).toEqual(3);
-  expect(tally.getVotes()).toEqual({'Walk before eat': 1});
-
-  ballot.proposal = 'Eat now';
-  tally.updateFromBallot(ballot);
-  expect(tally.getVotes()).toEqual({'Eat now': 1});
-
-  tally.updateFromBallot({
-    displayName: 'Lily',
-    proposal: 'Eat now'
-  });
-
-  tally.updateFromBallot({
-    displayName: 'Mattie',
-    proposal: 'Woof'
-  });
-
-  expect(tally.getVotes()).toEqual({
-    'Eat now': 2,
-    'Woof': 1
-  });
-  tally.stop();
-});
-*/
-
-/*
-test('update proposal', async () => {
-  const tally = createTally();
-  await tally.start();
-
-  const proposal = tally.proposal;
-  const name = tally.displayName;
-  const proposalElt = {
-    value: 'Pass the test'
-  };
-
-  await tally.propose(proposalElt);
-  tally.stop();
-  expect(tally.proposal).toEqual('Pass the test');
-
-  // make sure we don't clobber the ballot file
-  const tallyBackup = new Tally(tally.ballotUri);
-  await tallyBackup.start();
-  tallyBackup.stop();
-  expect(tallyBackup.proposal).toEqual(proposal);
-});
-*/

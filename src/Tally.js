@@ -44,12 +44,21 @@ module.exports = class Tally {
       sort((a, b) => b[0] - a[0]);
   }
 
-  getUrl(participantName) {
+  /**
+   * Return the URL for the consensus configured with the ballot information.
+   *
+   * @param participantName return the URL for the registered user.
+   * @param windowSubstitute an alternate for window.location for debugging.
+   */
+  getUrl(participantName, windowSubstitute) {
+    const baseUrl = (windowSubstitute || window.location).
+      toString().
+      replace(/\/\?.*/, ''); // XXX drops all configuration options.
     if (participantName) {
       const participantUri = this.participantUris[participantName];
-      return `${window.location}/?config=${this.ballotUri}&ballot=${participantUri}`;
+      return `${baseUrl}/?config=${this.ballotUri}&ballot=${participantUri}`;
     } else {
-      return `${window.location}/?config=${this.ballotUri}&ballot=${this.ballotUri}`;
+      return `${baseUrl}/?config=${this.ballotUri}&ballot=${this.ballotUri}`;
     }
   }
 
