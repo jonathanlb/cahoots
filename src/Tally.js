@@ -53,6 +53,7 @@ module.exports = class Tally {
   getUrl(participantName, windowSubstitute) {
     const baseUrl = (windowSubstitute || window.location).
       toString().
+      replace('/index.html', '').
       replace(/\/\?.*/, ''); // XXX drops all configuration options.
     if (participantName) {
       const participantUri = this.participantUris[participantName];
