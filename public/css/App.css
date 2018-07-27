@@ -106,6 +106,22 @@ header {
   padding-left: 10px;
 }
 
+/*
+ * https://stackoverflow.com/questions/773517/style-input-element-to-fill-remaining-width-of-its-container
+ * label: span --------- input -------------- /span
+ */
+input.rightInput {
+  width:100%;
+}
+label.rightLabel {
+  float: left;
+  font-weight: bold;
+}
+span.rightSpanner {
+  display:block;
+  overflow:hidden;
+}
+
 textarea.freeFormText {
   width: 100%;
 }
