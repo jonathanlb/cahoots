@@ -108,7 +108,7 @@ function renderTally(tally) {
                 tally.invite(
                   document.getElementById('inviteNameField').value,
                   document.getElementById('inviteDatField').value,
-                  (msg) => { alert(msg); }
+                  (msg) => { debug('Invite', msg); }
                 );
               }}
               type="button"

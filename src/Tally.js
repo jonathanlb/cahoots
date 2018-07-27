@@ -15,6 +15,7 @@ module.exports = class Tally {
     this.issueName = '...';
     this.participantUris = {};
     this.participantNames = {};
+    this.proposer = undefined;
     this.updateView = render;
     this.votes = {};
     this.watchSelf = false;
@@ -31,10 +32,6 @@ module.exports = class Tally {
     return this.writeSelf();
   }
 
-  createProposer() { // keep uri available
-    return new DatProposer();
-  }
-
   getChatMessages() {
     return Object.entries(this.chatMessages).
       map((entry) => {
@@ -42,6 +39,13 @@ module.exports = class Tally {
         return [parseInt(key[0]), key[1], entry[1]]
       }).
       sort((a, b) => b[0] - a[0]);
+  }
+
+  getProposer() { // keep uri parameter available
+    if (!this.proposer) {
+      this.proposer = new DatProposer();
+    }
+    return this.proposer;
   }
 
   /**
@@ -137,7 +141,7 @@ module.exports = class Tally {
 
   async readBallotFromUri(uri) {
     if (uri) {
-      const proposer = this.createProposer(uri);
+      const proposer = this.getProposer(uri);
       return proposer.readBallot(uri).
         then(this.parseBallot);
     }
@@ -227,7 +231,7 @@ module.exports = class Tally {
   async watchProposal(uri) {
     debug('watching', uri);
     if (uri) {
-      const watcher = this.createProposer(uri);
+      const watcher = this.getProposer(uri);
       this.stopper.onStop(() => watcher.stop());
       watcher.watchProposal(uri, (content) => {
         if (content) { // ignore empty requests
@@ -245,7 +249,7 @@ module.exports = class Tally {
 
   async writeSelf() {
     const content = this.toJson();
-    const writer = this.createProposer(this.ballotUri);
+    const writer = this.getProposer(this.ballotUri);
     return writer.propose(this.ballotUri, content).
       then(() => this.updateView());
   }

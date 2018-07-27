@@ -2,9 +2,14 @@ const debug = require('debug')('DatProposer');
 const errors = require('debug')('DatProposer:error');
 const Stopper = require('./Stopper');
 
+const DAT_POLL_INTERVAL = 10*1000;
+
 module.exports = class DatProposer {
   constructor() {
     this.stopper = new Stopper();
+    /** URLs to poll/watch until DatArchive.watch() can work. */
+    this.urls = new Set();
+    this.interval = window.setInterval(() => this.poll(), DAT_POLL_INTERVAL);
   }
 
   /**
@@ -28,11 +33,24 @@ module.exports = class DatProposer {
     return new dat(volume, f);
   }
 
+  /** Tickle Dat URLs we're watching to trigger watch updates. */
+  async poll() {
+    debug('polling', this.urls);
+    this.urls.forEach((url) => {
+      try {
+        this.readBallot(url);
+      } catch (error) {
+        errors('cannot poll', url, error.message);
+      }
+    });
+  }
+
   async propose(uri, content) {
     const { volume, fileName } = this.splitUri(uri);
     debug('writing', volume, fileName);
     return this.getDat(volume).
       writeFile(fileName, JSON.stringify(content, null, '\t')).
+      then(() => this.poll()).
       catch(e => errors('propose', e));
   }
 
@@ -57,6 +75,7 @@ module.exports = class DatProposer {
   stop() {
     debug('stop');
     this.stopper.stop();
+    window.clearInterval(this.interval);
   }
 
   watchProposal(uri, update) {
@@ -66,7 +85,8 @@ module.exports = class DatProposer {
     const eventTarget = dat.watch(fileName);
     this.stopper.onStop(() => {
       debug('closing watch', uri);
-      eventTarget.close()
+      eventTarget.close();
+      this.urls.delete(uri);
     });
     eventTarget.addEventListener('changed', (path) => {
       debug(path, 'updated');
@@ -75,5 +95,6 @@ module.exports = class DatProposer {
         catch((error) =>
           errors('watching for update', uri, error));
     });
+    this.urls.add(uri);
   }
 }
