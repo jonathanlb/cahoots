@@ -20,7 +20,7 @@ module.exports = class CahootsApp {
   async createIssue({displayName, issueName}) {
     debug('createIssue', displayName, issueName);
     const dat = this.datArchive;
-    const fileName = this.issueNameToFile(issueName);
+    const fileName = CahootsApp.issueNameToFile(issueName);
     const uri = `${dat.url}/${fileName}`;
     debug('creating at', uri);
     const content = {
@@ -71,7 +71,7 @@ module.exports = class CahootsApp {
       ['???', 'dat'])[0];
   }
 
-  issueNameToFile(issueName) {
+  static issueNameToFile(issueName) {
     return `${BALLOT_DIR}/${
       issueName.toLowerCase().
         replace(/\s/g, '_').

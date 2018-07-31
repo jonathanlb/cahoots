@@ -29,7 +29,7 @@ function renderHeader() {
         onclick=${() => window.app.setView('config') } >
         Configure
       </span>
-      <span className="navButton" onclick=${() => console.log('Open Issues')} >
+      <span className="navButton" onclick=${() => console.log('Open Issues, unimplemented')} >
         Open Issues
       </span>
       <span className="navButton"

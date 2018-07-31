@@ -11,6 +11,7 @@ module.exports = class Tally {
   constructor(ballotUri, render) {
     this.ballotUri = ballotUri;
     this.chatMessages = {};
+    this.createdMillis = new Date().getTime();
     this.displayName = '???';
     this.issueName = '...';
     this.participantUris = {};
@@ -188,6 +189,7 @@ module.exports = class Tally {
       'chat': Object.entries(this.chatMessages).
         filter(e => e[0].match(ourMsgRe)).
         map(e => [parseInt(e[0].match(tsRe)[0]), e[1]]),
+      'created': this.createdMillis,
       'displayName': this.displayName,
       'issueName': this.issueName,
       'participants': Object.entries(this.participantUris),
@@ -205,6 +207,7 @@ module.exports = class Tally {
   updateFromBallot(ballot) {
     debug(`update from ${ballot.displayName}`);
     if (ballot) {
+      this.createdMillis = ballot.createdMillis;
       this.issueName = ballot.issueName;
       this.updateProposals(ballot);
       this.updateChat(ballot);

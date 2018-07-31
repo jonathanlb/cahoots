@@ -80,7 +80,6 @@ test('resets', () => {
 })
 
 test('translates issue to file names', () => {
-  const app = new App();
-  expect(app.issueNameToFile('some 1st-Issue')).
+  expect(App.issueNameToFile('some 1st-Issue')).
     toEqual('ballots/some_1st-issue.json');
 });
