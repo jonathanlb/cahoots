@@ -1,4 +1,5 @@
-<img style="float:right;width:25%" src="public/raven.jpg">
+<img align="right" width="100px" src="public/raven.jpg">
+
 # Cahoots for Beaker
 Cahoots is a single-page [Beaker](https://beakerbrowser.com/) web/[dat](https://datproject.org/) app for people to discuss and vote for the group consensus.  Just build the application and read from Beaker.
 
