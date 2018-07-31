@@ -6,7 +6,7 @@ Cahoots is a single-page [Beaker](https://beakerbrowser.com/) web/[dat](https://
 ```sh
 npm install
 npm run build
-npm test!
+npm test
 # point beaker at the dist directory
 ```
 
@@ -37,17 +37,10 @@ You can also view issues by pasting a dat:// URL of ballots into the "Ballot Dir
 You cannot participate in a vote (others will not see your proposals or chat messages) until the create issue creator invites you, requiring you to send the creator a dat:// URI that you can write to.  The process is clumsy and needs work.
 
 ## Todos
-- test invitation
-- test propagate messages
-- figure out configuration
-- browse local issues
-- clear local storage....
 - remove voter
 - ballots write to server directory.... can overwrite
-- smoother updates -- file specific watch, strategic update in UI....
 - voter directory -- store locally dat archive names
 - running using [dat-gateway](https://github.com/pfrazee/dat-gateway)/[dat-archive-web](https://github.com/RangerMauve/dat-archive-web) returns 200. dat-archive-web needs [forked gateway](https://github.com/RangerMauve/dat-gateway)?
+- DatArchive doesn't watch without polling
 - handle poorly formed ballots
-- npm run watch doesn't build correctly?
-- Test DAT stuff
 - tests leave open file handles
